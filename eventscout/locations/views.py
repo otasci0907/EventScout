@@ -24,7 +24,7 @@ test_events_w_locations = [
         "description": "Description for Event 2",
         "coordinates": {
             "latitude": 34.0522,
-            "longitude": -118.2437
+            "longitude": -84.2437
         }
     },
     {
@@ -62,15 +62,17 @@ test_events_w_locations = [
     },
 ]
 
+@csrf_exempt
 def locations(request):
-    return render(request, 'test.html')
-
-@csrf_exempt # only for testing, use token in production
-def get_location(request):
+    data = {}
     if request.method == 'POST':
         latitude = request.POST.get('latitude')
         longitude = request.POST.get('longitude')
-        # Process the data (e.g., save to database)
-        return JsonResponse({'status': 'success', 'message': 'Location data received'})
-    else:
-        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+        events_in_range = get_events_in_range(1.5, float(latitude), float(longitude))
+        data = {
+            'events': events_in_range
+        }
+    return render(request, 'test.html', data)
+
+def get_events_in_range(max_dist, lat, long):
+    return [event for event in test_events_w_locations if event['coordinates']['latitude'] <= lat + max_dist and event['coordinates']['latitude'] >= lat - max_dist and event['coordinates']['longitude'] <= long + max_dist and event['coordinates']['longitude'] >= long - max_dist]
