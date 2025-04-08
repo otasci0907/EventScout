@@ -11,6 +11,43 @@
     <div id="map"></div>
 
     <script>
+
+        const events = [
+            {
+                "name": "Event 1",
+                "location": "Location 1",
+                "date": "2023-10-01",
+                "time": "10:00 AM",
+                "description": "Description for Event 1",
+                "coordinates": {
+                    "latitude": 40.7128,
+                    "longitude": 74.0060
+                }
+            },
+            {
+                "name": "Event 2",
+                "location": "Location 2",
+                "date": "2023-10-02",
+                "time": "11:00 AM",
+                "description": "Description for Event 2",
+                "coordinates": {
+                    "latitude": 34.0522,
+                    "longitude": 118.2437
+                }
+            },
+            {
+                "name": "Event 3",
+                "location": "Location 3",
+                "date": "2023-10-03",
+                "time": "12:00 PM",
+                "description": "Description for Event 3",
+                "coordinates": {
+                    "latitude": 51.5074,
+                    "longitude": 0.1278
+                }
+            }
+        ]
+
         function initMap() {
             if (navigator.geolocation) {                                                // if user allows location access
                 navigator.geolocation.getCurrentPosition(function (position) {
@@ -21,7 +58,13 @@
 
                     const map = new google.maps.Map(document.getElementById('map'), {   // creates google map centered at user's location
                         center: userLocation,
-                        zoom: 13
+                        zoom: 13,
+                        disableDefaultUI: true,                                          // disables default UI controls
+                        styles: [
+                            { featureType: "poi", stylers: [{ visibility: "off" }] },
+                            { featureType: "transit", stylers: [{ visibility: "off" }] },
+                            { featureType: "road", elementType: "labels.icon", stylers: [{ visibility: "off" }] }
+                        ]
                     });
 
                     new google.maps.Marker({                                            // adds marker pin to users location
@@ -29,6 +72,19 @@
                         map: map,
                         title: "You are here"
                     });
+
+                    for ( const event of events ) {                                 // puts marker pins on the map for each event
+                        new google.maps.Marker({
+                            position: {
+                                lat: event.coordinates.latitude,
+                                lng: event.coordinates.longitude
+                            },
+                            map: map,
+                            title: event.name
+                        });
+                    }
+
+
                 }, function () {                                                        // if user denies location access load default map
                     loadDefaultMap();
                 });
@@ -49,6 +105,17 @@
                 map: map,
                 title: "Default Location"
             });
+
+            for ( const event of events ) {                                             // puts marker pins on the map for each event
+                new google.maps.Marker({
+                    position: {
+                        lat: event.coordinates.latitude,
+                        lng: event.coordinates.longitude
+                    },
+                    map: map,
+                    title: event.name
+                });
+            }
         }
 
         window.onload = initMap;                                                        // calls initMap function when the page loads
