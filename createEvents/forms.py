@@ -1,5 +1,6 @@
 from django import forms
-from .models import Event
+from .models import Event, RSVP
+
 
 class EventForm(forms.ModelForm):
     class Meta:
@@ -23,4 +24,15 @@ class EventForm(forms.ModelForm):
                 'placeholder': 'MM/DD/YYYY HH:MM',
                 'type': 'datetime-local'
             }),
+        }
+
+class RSVPForm(forms.ModelForm):
+    class Meta:
+        model = RSVP
+        fields = ['first_name', 'last_name', 'email', 'phone']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'placeholder': 'First Name'}),
+            'last_name': forms.TextInput(attrs={'placeholder': 'Last Name'}),
+            'email': forms.EmailInput(attrs={'placeholder': 'your@email.com'}),
+            'phone': forms.TextInput(attrs={'placeholder': 'Phone Number'}),
         }

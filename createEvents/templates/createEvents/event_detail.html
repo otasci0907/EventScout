@@ -1,0 +1,19 @@
+<<h1>{{ event.title }}</h1>
+<p>{{ event.description }}</p>
+<p><strong>When:</strong> {{ event.start_time }} to {{ event.end_time }}</p>
+<p><strong>Where:</strong> {{ event.location }}</p>
+<p><strong>Organizer:</strong> {{ event.organizer }}</p>
+
+<h2>RSVP for this event</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit RSVP</button>
+</form>
+
+<h2>Attendees ({{ rsvps.count }})</h2>
+<ul>
+{% for rsvp in rsvps %}
+    <li>{{ rsvp.first_name }} {{ rsvp.last_name }}</li>
+{% endfor %}
+</ul>
