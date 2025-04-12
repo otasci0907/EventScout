@@ -16,6 +16,16 @@
         <p>Description: {{ event.description }}</p>
         </div>
     {% endfor %}
+    <p>{{data.API_KEY}}</p>
+    <iframe
+      width="600"
+      height="450"
+      style="border:0"
+      loading="lazy"
+      allowfullscreen
+      referrerpolicy="no-referrer-when-downgrade"
+      src="https://www.google.com/maps/embed/v1/place?key={{data.API_KEY}}&q=Space+Needle,Seattle+WA">
+    </iframe>
     <script>
     function getLocation() {
       console.log("Getting location...");
