@@ -4,14 +4,12 @@
 {% block title %}Home | EventScout{% endblock %}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static 'home/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 {% endblock %}
 
 {% block content %}
     <div id="map"></div>
-
     <script>
-
         const events = [
             {
                 "name": "Event 1",
@@ -49,6 +47,7 @@
         ]
 
         function initMap() {
+            console.log("map");
             if (navigator.geolocation) {                                                // if user allows location access
                 navigator.geolocation.getCurrentPosition(function (position) {
                     const userLocation = {

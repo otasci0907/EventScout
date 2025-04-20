@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['EventScout.onrender.com']
+ALLOWED_HOSTS = ['EventScout.onrender.com', '127.0.0.1']
 
 
 # Application definition
@@ -61,7 +61,7 @@ ROOT_URLCONF = "eventscout.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(BASE_DIR, 'eventscout/templates')],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -122,13 +122,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATIC_URL = "static/"
-
-STATICFILES_DIRS = [
-    BASE_DIR / 'eventscout' / 'static',
-    BASE_DIR / 'home' / 'static',
-]
+STATIC_URL = 'eventscout/static/'
+STATICFILES_DIRS = [BASE_DIR / 'eventscout' / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

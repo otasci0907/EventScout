@@ -4,10 +4,12 @@ from .forms import CustomUserCreationForm, CustomErrorList
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
+
 @login_required
 def logout(request):
     auth_logout(request)
     return redirect('home.index')
+
 def signup(request):
     template_data = {}
     template_data['title'] = 'Sign Up'
@@ -24,6 +26,7 @@ def signup(request):
             template_data['form'] = form
             return render(request, 'signup.html',
                 {'template_data': template_data})
+        
 def login(request):
     template_data = {}
     template_data['title'] = 'Login'

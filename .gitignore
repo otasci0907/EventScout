@@ -1,4 +1,13 @@
 venv/
 staticfiles/
 .env
-./__pycache__/
+__pycache__/
+accounts/__pycache__
+home/__pycache__
+createEvents/__pycache__
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+# C extensions
+*.so

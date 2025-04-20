@@ -1,19 +1,113 @@
-<<h1>{{ event.title }}</h1>
-<p>{{ event.description }}</p>
-<p><strong>When:</strong> {{ event.start_time }} to {{ event.end_time }}</p>
-<p><strong>Where:</strong> {{ event.location }}</p>
-<p><strong>Organizer:</strong> {{ event.organizer }}</p>
+{% extends 'base.html' %}
+{% load static %}
 
-<h2>RSVP for this event</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Submit RSVP</button>
-</form>
+{% block title %}{{ event.title }} | EventScout{% endblock %}
 
-<h2>Attendees ({{ rsvps.count }})</h2>
-<ul>
-{% for rsvp in rsvps %}
-    <li>{{ rsvp.first_name }} {{ rsvp.last_name }}</li>
-{% endfor %}
-</ul>
+{% block head %}
+    <style>
+        .event-container {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 0 1rem;
+        }
+        .card {
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        .card-header {
+            background-color: #ffffff;
+            border-bottom: none;
+            padding: 1.5rem;
+        }
+        .card-body {
+            padding: 1.5rem;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+            transform: translateY(-1px);
+        }
+        .form-control {
+            border-radius: 0.25rem;
+            transition: all 0.2s ease;
+        }
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        .attendees-list {
+            list-style: none;
+            padding: 0;
+        }
+        .attendees-list li {
+            padding: 0.5rem 0;
+            color: #495057;
+        }
+        @media (max-width: 576px) {
+            .event-container {
+                margin: 1.5rem auto;
+                padding: 0 0.5rem;
+            }
+            .card {
+                margin-bottom: 1.5rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="event-container">
+        <!-- Event Details Card -->
+        <div class="card">
+            <div class="card-header">
+                <h1 class="mb-0 fs-2 fw-bold text-dark">{{ event.title }}</h1>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">{{ event.description }}</p>
+                <p class="mb-2"><strong>When:</strong> {{ event.start_time }} to {{ event.end_time }}</p>
+                <p class="mb-2"><strong>Where:</strong> {{ event.location }}</p>
+                <p class="mb-0"><strong>Organizer:</strong> {{ event.organizer }}</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0 fs-4 fw-semibold text-dark">RSVP for this event</h2>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary w-100">Submit RSVP</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Attendees List Card -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0 fs-4 fw-semibold text-dark">Attendees ({{ rsvps.count }})</h2>
+            </div>
+            <div class="card-body">
+                {% if rsvps %}
+                    <ul class="attendees-list">
+                        {% for rsvp in rsvps %}
+                            <li>{{ rsvp.first_name }} {{ rsvp.last_name }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted">No attendees yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
