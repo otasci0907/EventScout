@@ -5,7 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="44db82d3-aef9-4853-91bb-cb9e593ba40d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/eventscout/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/eventscout/templates/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eventscout/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/eventscout/settings.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,6 +46,7 @@
     "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.pycharm.django.structure.promotion.once.per.project": "true",
     "git-widget-placeholder": "main",
     "last_opened_file_path": "C:/Users/Owner/PycharmProjects/EventScout",
     "node.js.detected.package.eslint": "true",
@@ -115,7 +117,7 @@
       <workItem from="1744903604859" duration="3873000" />
       <workItem from="1745431820159" duration="463000" />
       <workItem from="1745432290643" duration="44000" />
-      <workItem from="1745432336367" duration="124000" />
+      <workItem from="1745432336367" duration="1636000" />
     </task>
     <servers />
   </component>
