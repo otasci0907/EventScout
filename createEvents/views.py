@@ -57,7 +57,7 @@ def event_detail(request, event_id):
             rsvp = form.save(commit=False)
             rsvp.event = event
             rsvp.save()
-            return redirect('event_detail', event_id=event.id)
+            return redirect('events.event_detail', event_id=event.id)
     else:
         form = RSVPForm()
 
