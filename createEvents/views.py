@@ -66,3 +66,4 @@ def event_detail(request, event_id):
         'form': form,
         'rsvps': event.rsvps.all()
     })
+rsvp_form = event_detail
