@@ -53,8 +53,8 @@
                 <td>{{ event.start_time|date:"M d, Y - H:i" }}</td>
                 <td>{{ event.location }}</td>
                 <td>
-                    <a href="{% url 'edit_event' event.id %}" class="btn btn-warning">Edit</a>
-                    <a href="{% url 'delete_event' event.id %}" class="btn btn-danger">Delete</a>
+                    <a href="{% url 'events.edit_event' event.id %}" class="btn btn-warning">Edit</a>
+                    <a href="{% url 'events.delete_event' event.id %}" class="btn btn-danger">Delete</a>
                 </td>           
             </tr>
             {% empty %}

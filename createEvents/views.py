@@ -12,7 +12,7 @@ def create_event(request):
             event.organizer = request.user
             event.save()
             form = EventForm()
-            return redirect('create_event')
+            return redirect('createEvents/create_event.html')
     else:
         form = EventForm()
     user_events = Event.objects.filter(organizer=request.user).order_by('-start_time')
