@@ -1,8 +1,6 @@
 from django.contrib import admin
-from .models import AttendeeUser
-from .models import OrganizerUser
+from .models import User
 
-admin.site.register(AttendeeUser)
-admin.site.register(OrganizerUser)
+admin.site.register(User)
 
 # Register your models here.
