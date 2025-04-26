@@ -1,7 +1,16 @@
 from django import forms
 from .models import Event, RSVP
 
+
 class EventForm(forms.ModelForm):
+    typesOfEvents = [
+        ('regular', 'Regular Event'),
+        ('political', 'Political Rally'),
+        ('age_limit', 'Age-Restricted Event'),
+    ]
+
+
+    event_type = forms.ChoiceField(choices=typesOfEvents, required=True)
     class Meta:
         model = Event
         fields = '__all__'
@@ -24,6 +33,7 @@ class EventForm(forms.ModelForm):
                 'type': 'datetime-local'
             }),
         }
+
 
 class RSVPForm(forms.ModelForm):
     class Meta:
