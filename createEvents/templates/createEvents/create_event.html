@@ -75,11 +75,6 @@
                 <td>{{ event.start_time|date:"M d, Y - H:i" }}</td>
                 <td>{{ event.location }}</td>
                 <td>
-<<<<<<< HEAD
-                    <a href="{% url 'edit_event' event.id %}" class="btn btn-warning">Edit</a>
-                    <a href="{% url 'events.delete_event' event.id %}" class="btn btn-danger">Delete</a>
-                </td>           
-=======
                     <a href="{% url 'events.edit_event' event.id %}" class="btn btn-warning mb-2">Edit</a>
                     <a href="{% url 'events.delete_event' event.id %}" class="btn btn-danger mb-2">Delete</a>
         
@@ -115,7 +110,6 @@
                         {% endif %}
                     </div>
                 </td>
->>>>>>> chatstuff
             </tr>
             {% empty %}
             <tr>
