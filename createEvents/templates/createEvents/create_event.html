@@ -20,7 +20,7 @@
                     {% csrf_token %}
                     <div class="modal-header">
                         <h5 class="modal-title" id="createEventModalLabel">{% if editing %} Edit Event {% else %} Create New Event {% endif %}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <a href="{% url 'events.create_event' %}"><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" href="{% url 'events.create_event' %}"></button></a>
                     </div>
 
                     <div class="modal-body">
@@ -28,8 +28,12 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-success">{% if editing %} Edit Event {% else %} Create Event {% endif %}</button>
+                        <a href="{% url 'events.create_event' %}"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button></a>
+                        {% if editing %}
+                        <button type="submit" class="btn btn-success" href="{% url 'event_list' %}">Edit Event</button>
+                        {% else %}
+                        <button type="submit" class="btn btn-success">Create Event</button>
+                        {% endif %}
                     </div>
                 </form>
 

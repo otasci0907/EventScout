@@ -55,7 +55,34 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="p-3 ms-footer-bottom bg-dark" style="height:auto; padding-top: 0; padding-bottom: 0;">
+  <div class="modal fade" id="chatbotModal" tabindex="-1" aria-labelledby="chatbotModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title" id="chatbotModalLabel">Ask EventScout AI</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          <div id="chat-history" class="mb-3" style="max-height: 300px; overflow-y: auto;">
+          </div>
+
+          <form id="chat-form" method="post">
+            {% csrf_token %}
+            <div class="input-group">
+              <input type="text" id="user-message" name="message" class="form-control" placeholder="Ask about events recommendations or details" required>
+              <button type="submit" class="btn btn-primary">Send</button>
+            </div>
+          </form>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+    <footer class="p-3 ms-footer-bottom bg-dark" style="height:auto; padding-top: 0; padding-bottom: 0; position: absolute; bottom: 0px; width: 100%;">
       <div class="container d-flex justify-content-between">
         <div class="me-5 text-white">
           <span>DESIGNED BY
@@ -66,10 +93,57 @@
             <a href="azhu311@gatech.edu" target="_blank">ANDY ZHU</a>
           </span>
         </div>
-        <div class="text-white">
-          <span>© Copyright - 2025</span>
-        </div>
+        <button class="btn btn-success" style="right: 10px;" data-bs-toggle="modal" data-bs-target="#chatbotModal">
+          Ask Questions
+        </button>
       </div>
     </footer>
+
+    <script>
+    document.getElementById('chat-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const input = document.getElementById('user-message');
+        const message = input.value.trim();
+        if (!message) return;
+
+        const chatHistory = document.getElementById('chat-history');
+
+        const userMsgDiv = document.createElement('div');
+        userMsgDiv.className = 'text-end mb-2';
+        userMsgDiv.innerHTML = `<strong>You:</strong> ${message}`;
+        chatHistory.appendChild(userMsgDiv);
+
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+
+        input.value = '';
+
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        try {
+            const response = await fetch("{% url 'chatbot' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                body: new URLSearchParams({ 'message': message })
+            });
+
+            const data = await response.json();
+            const aiMsgDiv = document.createElement('div');
+            aiMsgDiv.className = 'text-start mb-2';
+            aiMsgDiv.innerHTML = `<strong>EventScout AI:</strong> ${data.response}`;
+            chatHistory.appendChild(aiMsgDiv);
+
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+        } catch (error) {
+            console.error('Error:', error);
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'text-start text-danger mb-2';
+            errorDiv.innerText = 'There was a problem contacting EventScout AI.';
+            chatHistory.appendChild(errorDiv);
+        }
+    });
+
+    </script>
 </body>
 </html>
