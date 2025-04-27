@@ -93,6 +93,7 @@ def create_event(request):
             'other': gender_counts.get('other', 0),
             'do not wish to specify': gender_counts.get('do not wish to specify', 0),
         }
+        
 
     user_events = Event.objects.filter(organizer=request.user).order_by('-start_time')
 
