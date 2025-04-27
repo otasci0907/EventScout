@@ -38,6 +38,13 @@ class Event(models.Model):
             except Exception as e:
                 logging.warning(f"Geocoding failed for {self.location}: {str(e)}")
         super().save(*args, **kwargs)
+genderChoices = [
+    ('male', 'Male'),
+    ('female', 'Male'),
+    ('other', 'Other'),
+    ('do not wish to specify', 'Do not wish to specify')
+
+]
 
 class RSVP(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='rsvps')
@@ -45,6 +52,8 @@ class RSVP(models.Model):
     last_name = models.CharField(max_length=100)
     email = models.EmailField()
     phone = models.CharField(max_length=20)
+    gender = models.CharField(max_length=100, choices = genderChoices, default = 'other')
+    age = models.IntegerField(default = 18)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load dict_extras %}
+
 
 {% block title %}Create Event | EventScout{% endblock %}
 
@@ -63,17 +65,49 @@
                 <td>{{ event.start_time|date:"M d, Y - H:i" }}</td>
                 <td>{{ event.location }}</td>
                 <td>
-                    <a href="{% url 'events.edit_event' event.id %}" class="btn btn-warning">Edit</a>
-                    <a href="{% url 'events.delete_event' event.id %}" class="btn btn-danger">Delete</a>
-                </td>           
+                    <a href="{% url 'events.edit_event' event.id %}" class="btn btn-warning mb-2">Edit</a>
+                    <a href="{% url 'events.delete_event' event.id %}" class="btn btn-danger mb-2">Delete</a>
+        
+                    <button class="btn btn-info" data-bs-toggle="collapse" data-bs-target="#rsvpCollapse{{ event.id }}">
+                        View RSVPs
+                    </button>
+                </td>
+            </tr>
+        
+            <!-- RSVP Collapse Section - must be inside the loop -->
+            <tr class="collapse" id="rsvpCollapse{{ event.id }}">
+                <td colspan="4">
+                    <div class="card card-body">
+                        <h5 class="mb-3">Attendees for {{ event.title }} ({{ event.rsvps.count }})</h5>
+        
+                        {% if event.rsvps.all %}
+                            <ul class="attendees-list">
+                                {% for rsvp in event.rsvps.all %}
+                                    <li>{{ rsvp.first_name }} {{ rsvp.last_name }} ({{ rsvp.gender|capfirst }}, {{ rsvp.age }} years old)</li>
+                                {% endfor %}
+                            </ul>
+        
+                            <!-- Pie Chart Container -->
+                            <div class="mt-4">
+                                <div class="mt-4 d-flex justify-content-center gap-4">
+                                    <canvas id="genderPieChart{{ event.id }}" style="width: 250px; height: 250px;"></canvas>
+                                    <canvas id="agePieChart{{ event.id }}" style="width: 250px; height: 250px;"></canvas>
+                                  </div>                                                              
+                            </div>
+        
+                        {% else %}
+                            <p class="text-muted">No RSVPs yet for this event.</p>
+                        {% endif %}
+                    </div>
+                </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="3">You haven’t created any events yet.</td>
+                <td colspan="4">You haven’t created any events yet.</td>
             </tr>
             {% endfor %}
         </tbody>
-    </table>
+            </table>
 {% if editing %}
 <script>
   var myModal = new bootstrap.Modal(document.getElementById('createEventModal'), {})
@@ -114,6 +148,122 @@
 </div>
 
 {% block extra_js %}
+<script>
+    const genderData = {
+      {% for event in your_events %}
+        {{ event.id }}: {
+          male: {{ event_gender_data|get_item:event.id|dict_get:"male"|default:"0" }},
+          female: {{ event_gender_data|get_item:event.id|dict_get:"female"|default:"0" }},
+          other: {{ event_gender_data|get_item:event.id|dict_get:"other"|default:"0" }},
+          dontspecify: {{ event_gender_data|get_item:event.id|dict_get:"do not wish to specify"|default:"0" }}
+        }{% if not forloop.last %},{% endif %}
+      {% endfor %}
+    };
+    </script>
+
+<script>
+    const ageData = {
+      {% for event in your_events %}
+        {{ event.id }}: {
+          under18: {{ event_age_data|get_item:event.id|dict_get:"under 18"|default:"0" }},
+          _18_24: {{ event_age_data|get_item:event.id|dict_get:"18-24"|default:"0" }},
+          _25_34: {{ event_age_data|get_item:event.id|dict_get:"25-34"|default:"0" }},
+          _35_44: {{ event_age_data|get_item:event.id|dict_get:"35-44"|default:"0" }},
+          _45_54: {{ event_age_data|get_item:event.id|dict_get:"45-54"|default:"0" }},
+          _55plus: {{ event_age_data|get_item:event.id|dict_get:"55+"|default:"0" }}
+        }{% if not forloop.last %},{% endif %}
+      {% endfor %}
+    };
+    </script>
+    
+        
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const charts = {}; // Track charts
+  
+  document.querySelectorAll('.collapse').forEach(collapse => {
+    collapse.addEventListener('shown.bs.collapse', function() {
+      const targetId = collapse.id; // e.g., "rsvpCollapse23"
+      const eventId = targetId.replace('rsvpCollapse', '');
+      const eventIdInt = parseInt(eventId);
+
+      // GENDER PIE CHART
+      const genderCanvas = document.getElementById('genderPieChart' + eventId);
+      if (genderCanvas && !charts['gender' + eventId]) {
+        const ctx = genderCanvas.getContext('2d');
+        charts['gender' + eventId] = new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: ['Male', 'Female', 'Other', 'Do not wish to specify'],
+            datasets: [{
+              label: 'Gender Distribution',
+              data: [
+                genderData[eventIdInt].male,
+                genderData[eventIdInt].female,
+                genderData[eventIdInt].other,
+                genderData[eventIdInt].dontspecify
+              ],
+              backgroundColor: [
+                'rgba(54, 162, 235, 0.7)',
+                'rgba(255, 99, 132, 0.7)',
+                'rgba(255, 206, 86, 0.7)',
+                'rgba(153, 102, 255, 0.7)'
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: false,
+            maintainAspectRatio: false
+          }
+        });
+      }
+
+      // AGE PIE CHART
+      const ageCanvas = document.getElementById('agePieChart' + eventId);
+      if (ageCanvas && !charts['age' + eventId]) {
+        const ctx = ageCanvas.getContext('2d');
+        charts['age' + eventId] = new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: ['Under 18', '18-24', '25-34', '35-44', '45-54', '55+'],
+            datasets: [{
+              label: 'Age Distribution',
+              data: [
+                ageData[eventIdInt].under18,
+                ageData[eventIdInt]._18_24,
+                ageData[eventIdInt]._25_34,
+                ageData[eventIdInt]._35_44,
+                ageData[eventIdInt]._45_54,
+                ageData[eventIdInt]._55plus
+              ],
+              backgroundColor: [
+                'rgba(255, 99, 132, 0.7)',
+                'rgba(255, 159, 64, 0.7)',
+                'rgba(255, 205, 86, 0.7)',
+                'rgba(75, 192, 192, 0.7)',
+                'rgba(54, 162, 235, 0.7)',
+                'rgba(153, 102, 255, 0.7)'
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: false,
+            maintainAspectRatio: false
+          }
+        });
+      }
+    });
+  });
+});
+
+    </script>
+    
+
+
 <script>
 document.getElementById('chat-send').addEventListener('click', async () => {
   const question = document.getElementById('chat-input').value.trim();

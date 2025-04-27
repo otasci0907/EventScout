@@ -26,12 +26,29 @@ class EventForm(forms.ModelForm):
         }
 
 class RSVPForm(forms.ModelForm):
+    genderChoices = [
+        ('male', 'Male'),
+        ('female', 'Male'),
+        ('other', 'Other'),
+        ('do not wish to specify', 'Do not wish to specify')
+
+    ]
+
+    gender = forms.ChoiceField(choices=genderChoices, widget=forms.Select(attrs={
+        'class': 'form-select'
+    }))
+    age = forms.IntegerField(widget=forms.NumberInput(attrs={
+        'placeholder': 'Age',
+        'min': 0,
+        'class': 'form-control'
+    }))
+
     class Meta:
         model = RSVP
-        fields = ['first_name', 'last_name', 'email', 'phone']
+        fields = ['first_name', 'last_name', 'email', 'phone', 'gender', 'age']
         widgets = {
-            'first_name': forms.TextInput(attrs={'placeholder': 'First Name'}),
-            'last_name': forms.TextInput(attrs={'placeholder': 'Last Name'}),
-            'email': forms.EmailInput(attrs={'placeholder': 'your@email.com'}),
-            'phone': forms.TextInput(attrs={'placeholder': 'Phone Number'}),
+            'first_name': forms.TextInput(attrs={'placeholder': 'First Name', 'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'placeholder': 'Last Name', 'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'placeholder': 'your@email.com', 'class': 'form-control'}),
+            'phone': forms.TextInput(attrs={'placeholder': 'Phone Number', 'class': 'form-control'}),
         }
