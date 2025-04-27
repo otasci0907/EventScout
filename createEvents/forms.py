@@ -57,16 +57,8 @@ class RSVPForm(forms.ModelForm):
         model = RSVP
         fields = ['first_name', 'last_name', 'email', 'phone', 'gender', 'age']
         widgets = {
-<<<<<<< HEAD
-            'first_name': forms.TextInput(attrs={'placeholder': 'First Name'}),
-            'last_name': forms.TextInput(attrs={'placeholder': 'Last Name'}),
-            'email': forms.EmailInput(attrs={'placeholder': 'your@email.com'}),
-            'phone': forms.TextInput(attrs={'placeholder': 'Phone Number'}),
-        }
-=======
             'first_name': forms.TextInput(attrs={'placeholder': 'First Name', 'class': 'form-control'}),
             'last_name': forms.TextInput(attrs={'placeholder': 'Last Name', 'class': 'form-control'}),
             'email': forms.EmailInput(attrs={'placeholder': 'your@email.com', 'class': 'form-control'}),
             'phone': forms.TextInput(attrs={'placeholder': 'Phone Number', 'class': 'form-control'}),
         }
->>>>>>> chatstuff

@@ -12,11 +12,6 @@
 {% block content %}
     <h1 class="mb-4" style="margin-left: 10px;">Event Dashboard</h1>
 
-<<<<<<< HEAD
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createEventModal" style="margin-left: 10px;">
-        + Create New Event
-    </button>
-=======
     <div class="d-flex align-items-center gap-2 mb-4">
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createEventModal">
             + Create New Event
@@ -30,7 +25,6 @@
         </button>
     </div>
     
->>>>>>> chatstuff
     <div class="modal fade" id="createEventModal" tabindex="-1" aria-labelledby="createEventModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content" style="text-align: center">
@@ -75,7 +69,7 @@
                 <td>{{ event.start_time|date:"M d, Y - H:i" }}</td>
                 <td>{{ event.location }}</td>
                 <td>
-                    <a href="{% url 'events.edit_event' event.id %}" class="btn btn-warning mb-2">Edit</a>
+                    <a href="{% url 'edit_event' event.id %}" class="btn btn-warning mb-2">Edit</a>
                     <a href="{% url 'events.delete_event' event.id %}" class="btn btn-danger mb-2">Delete</a>
         
                     <button class="btn btn-primary mb-2" data-bs-toggle="collapse" data-bs-target="#rsvpCollapse{{ event.id }}">
