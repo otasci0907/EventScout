@@ -4,12 +4,14 @@ from django.contrib.auth.decorators import login_required
 from .models import Event
 from .factory import EventFactory
 from django.http import JsonResponse
-
-import datetime
-import openai
 import os
 
-openai.api_key = os.environ['OPENAI_API_KEY']
+import datetime
+from openai import OpenAI
+
+client = OpenAI(api_key=os.environ['OPENAI_API_KEY'])
+import os
+
 
 @login_required
 def create_event(request):
@@ -135,17 +137,15 @@ def chatbot(request):
         if not user_message or len(user_message) == 0:
             return JsonResponse({'response': 'No message provided.'})
         basePrompt = getBasePrompt()
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant for recommending local events."},
-                {"role": "user", "content": basePrompt + user_message}
-            ],
-            max_tokens=500,
-            temperature=0.7,
-        )
+        response = client.chat.completions.create(model="gpt-4",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant for recommending local events."},
+            {"role": "user", "content": basePrompt + user_message}
+        ],
+        max_tokens=500,
+        temperature=0.7)
 
-        gpt_text = response['choices'][0]['message']['content']
+        gpt_text = response.choices[0].message.content
 
         return JsonResponse({'response': gpt_text})
 
