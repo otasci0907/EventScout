@@ -2,6 +2,49 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import EventForm, RSVPForm
 from django.contrib.auth.decorators import login_required
 from .models import Event
+# imports near the top
+import json, os
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt   # use if you don't include CSRF token
+from openai import OpenAI
+
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+
+
+@require_POST
+def chatgpt(request):
+    """Return an OpenAI answer to the posted question (+ optional context)."""
+    try:
+        payload = json.loads(request.body)
+        question = payload["question"]
+    except (KeyError, json.JSONDecodeError):
+        return HttpResponseBadRequest("Malformed JSON")
+
+    context = []
+    if title := payload.get("title"):
+        context.append(f"Event title: {title}")
+    if descr := payload.get("descr"):
+        context.append(f"Description: {descr}")
+
+    messages = [
+        {"role": "system",
+         "content": ("You are an event-planning assistant. "
+                     "Give concise, actionable suggestions.")},
+        {"role": "user",
+         "content": "\n".join(context + [question])}
+    ]
+
+    try:
+        resp = client.chat.completions.create(model="gpt-4o-mini",
+        messages=messages,
+        max_tokens=256,
+        temperature=0.7)
+        answer = resp.choices[0].message.content.strip()
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"answer": answer})
 
 @login_required
 def create_event(request):

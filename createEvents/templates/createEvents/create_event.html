@@ -10,9 +10,19 @@
 {% block content %}
     <h1 class="mb-4">Event Dashboard</h1>
 
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createEventModal">
-        + Create New Event
-    </button>
+    <div class="d-flex align-items-center gap-2 mb-4">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createEventModal">
+            + Create New Event
+        </button>
+    
+        <button type="button"
+                class="btn btn-outline-info"
+                data-bs-toggle="modal"
+                data-bs-target="#chatGPTModal">
+            Ask ChatGPT for Ideas
+        </button>
+    </div>
+    
     <div class="modal fade" id="createEventModal" tabindex="-1" aria-labelledby="createEventModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content" style="text-align: center">
@@ -70,4 +80,69 @@
   myModal.toggle()
 </script>
 {% endif %}
+{# -------------------- ChatGPT Assistant button & modal -------------------- #}
+
+<div class="modal fade" id="chatGPTModal" tabindex="-1"
+     aria-labelledby="chatGPTModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="chatGPTModalLabel">
+          Event Idea Assistant
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="mb-2">
+          <label class="form-label fw-semibold">Your question</label>
+          <textarea id="chat-input" class="form-control"
+                    rows="3"
+                    placeholder="e.g. Any creative themes for a charity 5 k?"></textarea>
+        </div>
+        <button id="chat-send" class="btn btn-primary w-100">
+          Ask ChatGPT
+        </button>
+
+        <hr>
+        <pre id="chat-output"
+             class="bg-light p-3 rounded border"
+             style="min-height:8rem; white-space:pre-wrap;"></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.getElementById('chat-send').addEventListener('click', async () => {
+  const question = document.getElementById('chat-input').value.trim();
+  if (!question) return;
+
+  // Optionally add current form values so the model has context
+  const title = document.querySelector('#id_title')?.value || '';
+  const descr = document.querySelector('#id_description')?.value || '';
+
+  const out = document.getElementById('chat-output');
+  out.textContent = "Thinking…";
+
+  try {
+    const resp = await fetch("{% url 'events.chatgpt' %}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": "{{ csrf_token }}",
+      },
+      body: JSON.stringify({ question, title, descr }),
+    });
+    if (!resp.ok) throw new Error(await resp.text());
+    const data = await resp.json();
+    out.textContent = data.answer;
+  } catch (err) {
+    out.textContent = "Error: " + err;
+  }
+});
+</script>
+{% endblock %}
+
 {% endblock %}
