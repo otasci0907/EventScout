@@ -46,7 +46,6 @@
           }
         }
     </style>
-    </style>
 {% endblock %}
 
 {% block content %}
@@ -55,8 +54,9 @@
             <div class="filter-controls">
                 <label for="id_distance">Show events within:</label>
                 <select name="distance" id="id_distance" class="distance-select">
+                    <option value="-" selected>Select Distance</option>
                     <option value="5">5 miles</option>
-                    <option value="10" selected>10 miles</option>
+                    <option value="10">10 miles</option>
                     <option value="25">25 miles</option>
                     <option value="50">50 miles</option>
                 </select>
@@ -155,8 +155,8 @@
             const distance = urlParams.get('distance');
             const userLat = urlParams.get('user_lat');
             const userLng = urlParams.get('user_lng');
-
-            if (distance && userLat && userLng) {
+            
+            if (distance != "-" && userLat && userLng) {
                 const filteredEvents = filterEventsByDistance(
                     parseFloat(userLat),
                     parseFloat(userLng),

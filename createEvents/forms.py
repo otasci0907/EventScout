@@ -13,7 +13,7 @@ class EventForm(forms.ModelForm):
     event_type = forms.ChoiceField(choices=typesOfEvents, required=True)
     class Meta:
         model = Event
-        exclude = ['organizer']
+        exclude = ['organizer', 'org_email']
         widgets = {
             'title': forms.TextInput(attrs={
                 'placeholder': 'e.g. Jazz Night at Central Park'
@@ -41,7 +41,7 @@ class EventForm(forms.ModelForm):
 class RSVPForm(forms.ModelForm):
     genderChoices = [
         ('male', 'Male'),
-        ('female', 'Male'),
+        ('female', 'Female'),
         ('other', 'Other'),
         ('do not wish to specify', 'Do not wish to specify')
 

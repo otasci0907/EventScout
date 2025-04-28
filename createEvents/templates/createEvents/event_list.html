@@ -68,7 +68,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="events-container" style="height:70vh;">
+    <div class="events-container" style="height:100vh;">
         <h1 class="fs-2 fw-bold text-dark mb-4">Upcoming Events</h1>
         {% if events %}
             {% for event in events %}
@@ -84,7 +84,9 @@
         {% else %}
             <p class="text-muted">No upcoming events.</p>
         {% endif %}
-            <a href="{% url 'events.create_event' %}" class="btn btn-primary d-inline-block mt-3">Create New Event</a>
+            {% if organizer%}
+                <a href="{% url 'events.create_event' %}" class="btn btn-primary d-inline-block mt-3">Create New Event</a>
+            {% endif%}
             <a href="{% url 'events.my_rsvps' %}" class="btn btn-primary d-incline-block mt-3">My RSVPs</a>
     </div>
 {% endblock %}

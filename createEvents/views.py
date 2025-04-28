@@ -118,8 +118,7 @@ def create_event(request):
                 )
             if (event != None):
                 event.save()
-            return redirect('events.create_event') 
-
+            return redirect('events.create_event')
     else:
         form = EventForm()
 
@@ -137,7 +136,7 @@ def create_event(request):
         }
         
 
-    user_events = Event.objects.filter(organizer=request.user).order_by('-start_time')
+    user_events = Event.objects.filter(organizer=request.user.username).order_by('-start_time')
 
     event_gender_data = {}
     event_age_data = {}
@@ -178,12 +177,12 @@ def create_event(request):
         'form': form,
         'your_events': user_events,
         'event_gender_data': event_gender_data,
-        'event_age_data': event_age_data,
+        'event_age_data': event_age_data
     })
 
 @login_required
 def edit_event(request, event_id):
-    event = get_object_or_404(Event, id=event_id, organizer=request.user)
+    event = get_object_or_404(Event, id=event_id, organizer=request.user.username)
     if request.method == 'POST':
         form = EventForm(request.POST, instance=event)
         if form.is_valid():
@@ -192,7 +191,7 @@ def edit_event(request, event_id):
     else:
         form = EventForm(instance=event)
 
-    user_events = Event.objects.filter(organizer=request.user).order_by('-start_time')
+    user_events = Event.objects.filter(organizer=request.user.username).order_by('-start_time')
 
     return render(request, 'createEvents/create_event.html', {
         'form': form,
@@ -204,9 +203,7 @@ def edit_event(request, event_id):
 @login_required
 def delete_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
-    if (str(event.organizer) != str(request.user)):
-        print("permission erorr", event.organizer, request.user)
-        #not the organizer so doesn't have permission to delete
+    if (str(event.organizer) != str(request.user.username)):
         return redirect('events.create_event')
     event.delete()
     return redirect('events.create_event')
@@ -214,12 +211,14 @@ def delete_event(request, event_id):
 
 def event_list(request):
     events = Event.objects.all().order_by('-created_at')
-    return render(request, 'createEvents/event_list.html', {'events': events})
+    organizer = True
+    if request.user.is_anonymous or request.user.type != 'organizer':
+        organizer = False
+    return render(request, 'createEvents/event_list.html', {'events': events, 'organizer': organizer})
 
 def event_detail(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
 
-    # ✅ Build Google Calendar Link
     start = event.start_time.strftime("%Y%m%dT%H%M%SZ")
     end = event.end_time.strftime("%Y%m%dT%H%M%SZ")
     params = {
@@ -316,8 +315,8 @@ def my_rsvps(request):
     if not request.user.is_authenticated:
         return redirect('/accounts/login/')
 
-    user_email = request.user.email
-    my_rsvps = RSVP.objects.filter(email=user_email)
+    user_email = request.user.name
+    my_rsvps = RSVP.objects.filter(name=user_email)
 
     rsvp_data = []
     for rsvp in my_rsvps:

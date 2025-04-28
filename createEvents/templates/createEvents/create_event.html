@@ -59,6 +59,7 @@
 {% endblock %}
 
 {% block content %}
+<div style='width=100%'>
     <h1 class="mb-4" style="margin-left: 10px;">Event Dashboard</h1>
 
     <div class="d-flex align-items-center gap-2 mb-4">
@@ -103,12 +104,13 @@
     </div>
     <h3 class="mt-5" style="margin-left: 10px;">My Events</h3>
 
-    <table class="table table-striped" style="margin-left: 10px; height:auto;">
-        <thead>
+    <table class="table table-striped" style="padding-left: 10px; height:auto;">
+        <thead style='width=100%'>
             <tr>
                 <th>Title</th>
                 <th>Date & Time</th>
                 <th>Location</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -194,6 +196,7 @@
       </div>
     </div>
   </div>
+</div>
 </div>
 
 {% block extra_js %}
