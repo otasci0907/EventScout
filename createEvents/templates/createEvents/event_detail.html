@@ -77,6 +77,11 @@
                 <p class="mb-2"><strong>When:</strong> {{ event.start_time }} to {{ event.end_time }}</p>
                 <p class="mb-2"><strong>Where:</strong> {{ event.location }}</p>
                 <p class="mb-0"><strong>Organizer:</strong> {{ event.organizer }}</p>
+
+                <a href="{{ calendar_url }}" target="_blank" class="btn btn-success mt-3">
+                    Add to Google Calendar
+                </a>
+
             </div>
         </div>
 

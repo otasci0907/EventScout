@@ -37,15 +37,19 @@
 <div class="rsvps-container">
     <h1 class="fs-2 fw-bold text-dark mb-4">My RSVPs</h1>
 
-    {% if my_rsvps %}
-        {% for rsvp in my_rsvps %}
+    {% if rsvp_data %}
+        {% for item in rsvp_data %}
             <div class="rsvp-card card">
                 <div class="card-body">
-                    <h2 class="card-title">{{ rsvp.event.title }}</h2>
+                    <h2 class="card-title">{{ item.rsvp.event.title }}</h2>
                     <p class="card-text mb-0">
-                        Date: {{ rsvp.event.start_time|date:"M d, Y, g:i a" }}<br>
-                        Location: {{ rsvp.event.location }}
+                        Date: {{ item.rsvp.event.start_time|date:"M d, Y, g:i a" }}<br>
+                        Location: {{ item.rsvp.event.location }}
                     </p>
+                    <!-- 🚀 Calendar Button -->
+                    <a href="{{ item.calendar_url }}" target="_blank" class="btn btn-success mt-3">
+                        📅 Add to Google Calendar
+                    </a>
                 </div>
             </div>
         {% endfor %}
