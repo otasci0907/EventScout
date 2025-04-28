@@ -77,6 +77,9 @@
         {% else %}
             <p class="text-muted">No upcoming events.</p>
         {% endif %}
-        <a href="{% url 'events.create_event' %}" class="btn btn-primary d-inline-block mt-3">Create New Event</a>
+        <div class = "d-flex gap-3 mt-3">
+            <a href="{% url 'events.create_event' %}" class="btn btn-primary d-inline-block mt-3">Create New Event</a>
+            <a href="{% url 'events.my_rsvps' %}" class="btn btn-primary">My RSVPs</a>
+        </div>
     </div>
 {% endblock %}

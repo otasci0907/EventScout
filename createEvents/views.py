@@ -303,3 +303,15 @@ def event_rsvp_data(request, event_id):
         "genders": gender_counts,
         "attendees": attendees,
     })
+
+def my_rsvps(request):
+    if not request.user.is_authenticated:
+        return redirect('/accounts/login/')
+
+    user_email = request.user.email
+    my_rsvps = RSVP.objects.filter(email=user_email)
+
+    context = {
+        'my_rsvps': my_rsvps
+    }
+    return render(request, 'createEvents/my_rsvps.html', context)

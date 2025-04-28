@@ -11,5 +11,6 @@ urlpatterns = [
     path('chatbot/', views.chatbot, name='chatbot'),
     path("chatgpt/", views.chatgpt, name="events.chatgpt"),
     path("events/<int:event_id>/rsvps/", views.event_rsvp_data, name="events.rsvps"),
+    path('my-rsvps/', views.my_rsvps, name='events.my_rsvps'),
 
 ]

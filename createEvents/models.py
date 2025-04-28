@@ -40,7 +40,7 @@ class Event(models.Model):
         super().save(*args, **kwargs)
 genderChoices = [
     ('male', 'Male'),
-    ('female', 'Male'),
+    ('female', 'Female'),
     ('other', 'Other'),
     ('do not wish to specify', 'Do not wish to specify')
 

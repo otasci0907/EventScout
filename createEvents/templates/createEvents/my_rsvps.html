@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}My RSVPs | EventScout{% endblock %}
+
+{% block head %}
+    <style>
+        .rsvps-container {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 0 1rem;
+        }
+        .rsvp-card {
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .rsvp-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .rsvp-card .card-body {
+            padding: 1.25rem;
+        }
+        .rsvp-card .card-title {
+            margin-bottom: 0.5rem;
+            font-size: 1.25rem;
+        }
+        .rsvp-card .card-text {
+            color: #495057;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="rsvps-container">
+    <h1 class="fs-2 fw-bold text-dark mb-4">My RSVPs</h1>
+
+    {% if my_rsvps %}
+        {% for rsvp in my_rsvps %}
+            <div class="rsvp-card card">
+                <div class="card-body">
+                    <h2 class="card-title">{{ rsvp.event.title }}</h2>
+                    <p class="card-text mb-0">
+                        Date: {{ rsvp.event.start_time|date:"M d, Y, g:i a" }}<br>
+                        Location: {{ rsvp.event.location }}
+                    </p>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted">You have not RSVPed to any events yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
