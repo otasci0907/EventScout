@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Event
 from .factory import EventFactory
 from django.http import JsonResponse
+from urllib.parse import urlencode
 import os
 
 import datetime
@@ -218,6 +219,17 @@ def event_list(request):
 def event_detail(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
 
+    # ✅ Build Google Calendar Link
+    start = event.start_time.strftime("%Y%m%dT%H%M%SZ")
+    end = event.end_time.strftime("%Y%m%dT%H%M%SZ")
+    params = {
+        'action': 'TEMPLATE',
+        'text': event.title,
+        'dates': f'{start}/{end}',
+        'details': event.description,
+        'location': event.location,
+    }
+    calendar_url = "https://www.google.com/calendar/render?" + urlencode(params)
 
     if request.method == 'POST':
         form = RSVPForm(request.POST)
@@ -229,11 +241,11 @@ def event_detail(request, event_id):
     else:
         form = RSVPForm()
 
-
     return render(request, 'createEvents/event_detail.html', {
         'event': event,
         'form': form,
-        'rsvps': event.rsvps.all()
+        'rsvps': event.rsvps.all(),
+        'calendar_url': calendar_url,
     })
 rsvp_form = event_detail
 
@@ -299,3 +311,34 @@ def event_rsvp_data(request, event_id):
         "genders": gender_counts,
         "attendees": attendees,
     })
+
+def my_rsvps(request):
+    if not request.user.is_authenticated:
+        return redirect('/accounts/login/')
+
+    user_email = request.user.email
+    my_rsvps = RSVP.objects.filter(email=user_email)
+
+    rsvp_data = []
+    for rsvp in my_rsvps:
+        event = rsvp.event
+        start = event.start_time.strftime("%Y%m%dT%H%M%SZ")
+        end = event.end_time.strftime("%Y%m%dT%H%M%SZ")
+        params = {
+            'action': 'TEMPLATE',
+            'text': event.title,
+            'dates': f'{start}/{end}',
+            'details': event.description,
+            'location': event.location,
+        }
+        calendar_url = "https://www.google.com/calendar/render?" + urlencode(params)
+
+        rsvp_data.append({
+            'rsvp': rsvp,
+            'calendar_url': calendar_url,
+        })
+
+    context = {
+        'rsvp_data': rsvp_data
+    }
+    return render(request, 'createEvents/my_rsvps.html', context)
