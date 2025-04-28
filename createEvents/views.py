@@ -12,21 +12,17 @@ from openai import OpenAI
 client = OpenAI(api_key=os.environ['OPENAI_API_KEY'])
 import os
 
-# imports near the top
 import json, os
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt   # use if you don't include CSRF token
 from openai import OpenAI
 from django.http import JsonResponse
 from .models import Event, RSVP
 from django.shortcuts import get_object_or_404
-
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-from .models import Event
-
 from collections import Counter
 from .models import Event
+
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 def dashboard_view(request):
     events = Event.objects.prefetch_related('rsvps').all()
@@ -44,7 +40,6 @@ def dashboard_view(request):
 
 @require_POST
 def chatgpt(request):
-    """Return an OpenAI answer to the posted question (+ optional context)."""
     try:
         payload = json.loads(request.body)
         question = payload["question"]
@@ -84,7 +79,7 @@ def create_event(request):
             event_type = form.cleaned_data['event_type']
             factory = EventFactory()
             event = None
-            print(request.user)
+            print("hello", request.user)
             if event_type == 'regular':
                 event = factory.createRegularEvent(
                     organizer=str(request.user),
@@ -93,7 +88,10 @@ def create_event(request):
                     start_time=form.cleaned_data['start_time'],
                     end_time=form.cleaned_data['end_time'],
                     location=form.cleaned_data['location'],
+                    lat=form.cleaned_data['latitude'],
+                    long=form.cleaned_data['longitude'],
                 )
+                print(event)
             elif event_type == 'political':
                 event = factory.createPoliticalRally(
                     organizer=str(request.user),
@@ -102,6 +100,8 @@ def create_event(request):
                     start_time=form.cleaned_data['start_time'],
                     end_time=form.cleaned_data['end_time'],
                     location=form.cleaned_data['location'],
+                    lat=form.cleaned_data['latitude'],
+                    long=form.cleaned_data['longitude'],
                 )
             elif event_type == 'age_limit':
                 event = factory.createAgeLimitEvent(
@@ -111,13 +111,11 @@ def create_event(request):
                     start_time=form.cleaned_data['start_time'],
                     end_time=form.cleaned_data['end_time'],
                     location=form.cleaned_data['location'],
+                    lat=form.cleaned_data['latitude'],
+                    long=form.cleaned_data['longitude'],
                 )
             if (event != None):
                 event.save()
-            event = form.save(commit=False)
-            event.organizer = request.user
-            event.save()
-            form = EventForm()
             return redirect('events.create_event') 
 
     else:
@@ -125,7 +123,6 @@ def create_event(request):
 
     user_events = Event.objects.filter(organizer=request.user).order_by('-start_time')
 
-    # 🚀 Build gender counts
     event_gender_data = {}
 
     for event in user_events:
@@ -144,7 +141,6 @@ def create_event(request):
     event_age_data = {}
 
     for event in user_events:
-        # GENDER counts
         gender_counts = Counter(rsvp.gender for rsvp in event.rsvps.all())
         event_gender_data[event.id] = {
             'male': gender_counts.get('male', 0),
@@ -153,7 +149,6 @@ def create_event(request):
             'do not wish to specify': gender_counts.get('do not wish to specify', 0),
         }
 
-        # AGE counts
         age_classes = {
             'under 18': 0,
             '18-24': 0,
@@ -177,12 +172,11 @@ def create_event(request):
                 age_classes['55+'] += 1
 
         event_age_data[event.id] = age_classes
-
     return render(request, 'createEvents/create_event.html', {
         'form': form,
         'your_events': user_events,
         'event_gender_data': event_gender_data,
-        'event_age_data': event_age_data,   # 🚨 pass new age data
+        'event_age_data': event_age_data,
     })
 
 @login_required
@@ -247,15 +241,18 @@ rsvp_form = event_detail
 def getBasePrompt():
     events = Event.objects.all()
     prompt = "Today's date is " + str(datetime.datetime.now().strftime("%Y-%m-%d")) + "\n"
+    # prompt += "Here is the user's latitude and longitude" + str(lat) + ", " + str(long) + ":\n\n"
     prompt += "Here are the descriptions of all the events:\n\n"
-    for event in Event.objects.all():
+    for event in events:
         prompt += "Title of event: " + event.title
         prompt += "\n"
         prompt += "Event Description: " + event.description + "\n"
         prompt += "Event Location: " + event.location + "\n"
+        prompt += "Event Latitude and Longitude: " + str(event.latitude) + "," + str(event.longitude) + "\n"
         prompt += "Start and end: " + str(event.start_time) + " " + str(event.end_time) + "\n"
         prompt += "\n\n"
     return prompt
+
 def chatbot(request):
     if request.method == 'POST':
         user_message = request.POST.get('message', '')
@@ -265,18 +262,18 @@ def chatbot(request):
         basePrompt = getBasePrompt()
         response = client.chat.completions.create(model="gpt-4",
         messages=[
-            {"role": "system", "content": "You are a helpful assistant for recommending local events."},
+            {"role": "system", "content": "You are a helpful assistant for recommending local events, but also answer user questions without recommending an event if they are not asking for a recommendation."},
             {"role": "user", "content": basePrompt + user_message}
         ],
         max_tokens=500,
-        temperature=0.7)
+        temperature=0.8)
 
         gpt_text = response.choices[0].message.content
 
         return JsonResponse({'response': gpt_text})
 
     return JsonResponse({'error': 'Gotta be a POST request my boi.'}, status=400)
-print(getBasePrompt())
+
 def event_rsvp_data(request, event_id):
     event = get_object_or_404(Event, pk=event_id)
     rsvps = event.rsvps.all()

@@ -17,3 +17,7 @@ header {
     width: 100%;
     border-top: 1px solid #ccc;
 }
+
+.pac-container {
+    z-index: 2000 !important;
+  }

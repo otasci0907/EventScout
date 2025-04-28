@@ -13,7 +13,7 @@ class EventForm(forms.ModelForm):
     event_type = forms.ChoiceField(choices=typesOfEvents, required=True)
     class Meta:
         model = Event
-        fields = '__all__'
+        exclude = ['organizer']
         widgets = {
             'title': forms.TextInput(attrs={
                 'placeholder': 'e.g. Jazz Night at Central Park'
@@ -32,6 +32,8 @@ class EventForm(forms.ModelForm):
                 'placeholder': 'MM/DD/YYYY HH:MM',
                 'type': 'datetime-local'
             }),
+            'latitude': forms.HiddenInput(),
+            'longitude': forms.HiddenInput(),
         }
 
 

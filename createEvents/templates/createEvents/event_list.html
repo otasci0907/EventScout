@@ -34,6 +34,7 @@
         }
         .event-card .card-text {
             color: #495057;
+            font-size: 1rem;
         }
         .btn-primary {
             background-color: #007bff;
@@ -55,13 +56,19 @@
             .event-card {
                 margin-bottom: 1rem;
             }
+            .event-card .card-title {
+                font-size: 1.1rem;
+            }
+            .event-card .card-text {
+                font-size: 0.9rem;
+            }
         }
     </style>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 {% endblock %}
 
 {% block content %}
-    <div class="events-container">
+    <div class="events-container" style="height:70vh;">
         <h1 class="fs-2 fw-bold text-dark mb-4">Upcoming Events</h1>
         {% if events %}
             {% for event in events %}

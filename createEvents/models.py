@@ -38,6 +38,7 @@ class Event(models.Model):
             except Exception as e:
                 logging.warning(f"Geocoding failed for {self.location}: {str(e)}")
         super().save(*args, **kwargs)
+        
 genderChoices = [
     ('male', 'Male'),
     ('female', 'Male'),

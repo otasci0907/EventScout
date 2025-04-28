@@ -4,8 +4,8 @@
 {% block title %}Home | EventScout{% endblock %}
 
 {% block head %}
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSGZQM_4sCsx7fyxC6aRDYz6AoLOHWCkc&libraries=geometry" async defer></script>
     <style>
         .filter-container {
             padding: 15px;
@@ -36,14 +36,20 @@
             gap: 5px;
         }
         #map {
-            height: 500px;
+            height: 64vh;
             width: 100%;
         }
+        @media (max-width: 500px) {
+          .distance-filter {
+            flex-direction: column;
+            align-items: stretch;
+          }
+        }
+    </style>
     </style>
 {% endblock %}
 
 {% block content %}
-    <!-- Distance Filter Section -->
     <div class="filter-container">
         <form method="get" id="filterForm" class="distance-filter">
             <div class="filter-controls">
@@ -56,18 +62,20 @@
                 </select>
                 <input type="hidden" name="user_lat" id="id_user_lat">
                 <input type="hidden" name="user_lng" id="id_user_lng">
-                <button type="button" class="location-btn" onclick="getLocation()">
+                <button type="button" class="location-btn" aria-label="Filter events by location" onclick="getLocation()">
                     <i class="bi bi-geo-alt"></i> Filter
                 </button>
             </div>
         </form>
     </div>
-
-    <!-- Map Section -->
-    <div id="map"></div>
-
+    <div id="map" style="position:relative;">
+        <div id="loading-spinner" style="position:absolute;top:50%;left:50%;transform:translate(-50%, -50%);z-index:100;">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
     <script>
-        // loads events data from context
         const events = [
             {% for event in events %}
             {
@@ -84,10 +92,8 @@
             }{% if not forloop.last %},{% endif %}
             {% endfor %}
         ];
-
         let map;
         let distanceCircle;
-
         function addEventMarkers(map, eventsToShow) {
             for (const event of eventsToShow) {
                 const marker = new google.maps.Marker({
@@ -107,6 +113,7 @@
                         <p><strong>Time:</strong> ${event.time}</p>
                         <p>${event.description}</p>
                         <a href="/events/detail/${event.id}/" class="btn btn-primary btn-sm mt-2">RSVP</a>
+                        <a href="https://www.google.com/maps/dir/?api=1&destination=${event.coordinates.latitude},${event.coordinates.longitude}" target="_blank">Get Directions</a>
                     </div>
                 `;
 
@@ -119,9 +126,7 @@
                 });
             }
         }
-
         function loadMap(centerLocation, initialTitle) {
-            // Initialize the map (same as your working version)
             map = new google.maps.Map(document.getElementById('map'), {
                 center: centerLocation,
                 zoom: 13,
@@ -132,8 +137,6 @@
                     { featureType: "road", elementType: "labels.icon", stylers: [{ visibility: "off" }] }
                 ]
             });
-
-            // Add user marker
             new google.maps.Marker({
                 position: centerLocation,
                 map: map,
@@ -148,28 +151,23 @@
                 }
             });
 
-            // Check for distance filter
             const urlParams = new URLSearchParams(window.location.search);
             const distance = urlParams.get('distance');
             const userLat = urlParams.get('user_lat');
             const userLng = urlParams.get('user_lng');
 
             if (distance && userLat && userLng) {
-                // Filter events by distance
                 const filteredEvents = filterEventsByDistance(
                     parseFloat(userLat),
                     parseFloat(userLng),
                     parseInt(distance)
                 );
                 addEventMarkers(map, filteredEvents);
-
-                // Add distance circle
                 updateDistanceCircle(
                     parseInt(distance),
                     { lat: parseFloat(userLat), lng: parseFloat(userLng) }
                 );
             } else {
-                // Show all events
                 addEventMarkers(map, events);
             }
         }
@@ -181,18 +179,16 @@
                 const distance = google.maps.geometry.spherical.computeDistanceBetween(
                     new google.maps.LatLng(centerLat, centerLng),
                     new google.maps.LatLng(eventLat, eventLng)
-                ) / 1609.34; // Convert meters to miles
+                ) / 1609.34;
                 return distance <= distanceMiles;
             });
         }
 
         function updateDistanceCircle(distanceMiles, center) {
-            // Remove existing circle
             if (distanceCircle) {
                 distanceCircle.setMap(null);
             }
 
-            // Add new circle
             distanceCircle = new google.maps.Circle({
                 strokeColor: '#4285F4',
                 strokeOpacity: 0.8,
@@ -201,7 +197,7 @@
                 fillOpacity: 0.2,
                 map: map,
                 center: center,
-                radius: distanceMiles * 1609.34 // Convert miles to meters
+                radius: distanceMiles * 1609.34
             });
         }
 
@@ -223,7 +219,6 @@
         }
 
         function initMap() {
-            // Check for URL parameters first
             const urlParams = new URLSearchParams(window.location.search);
             const userLat = urlParams.get('user_lat');
             const userLng = urlParams.get('user_lng');
@@ -250,8 +245,6 @@
                 loadMap({ lat: 33.7756, lng: -84.3963 }, "Default Location");
             }
         }
-
-        // Initialize the map when the window loads
         window.onload = initMap;
     </script>
 {% endblock %}

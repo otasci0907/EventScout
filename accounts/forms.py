@@ -13,7 +13,7 @@ class CustomUserCreationForm(UserCreationForm):
     type = forms.ChoiceField(choices=USER_TYPE_CHOICES)
 
     class Meta:
-        model = User  # Change this if you're using a custom user model
+        model = User
         fields = ['username', 'email','first_name','last_name', 'type', 'password1', 'password2']
 
     def __init__(self, *args, **kwargs):
