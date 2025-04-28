@@ -19,7 +19,8 @@ class EventForm(forms.ModelForm):
                 'placeholder': 'e.g. Jazz Night at Central Park'
             }),
             'description': forms.Textarea(attrs={
-                'placeholder': 'Write a detailed description of your event...'
+                'placeholder': 'Write a detailed description of your event...',
+                'style': 'width:70%;'
             }),
             'location': forms.TextInput(attrs={
                 'placeholder': 'e.g. 123 Main St, New York, NY'

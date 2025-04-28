@@ -79,10 +79,10 @@ def create_event(request):
             event_type = form.cleaned_data['event_type']
             factory = EventFactory()
             event = None
-            print("hello", request.user)
             if event_type == 'regular':
                 event = factory.createRegularEvent(
-                    organizer=str(request.user),
+                    organizer=request.user.username,
+                    email=request.user.email,
                     title=form.cleaned_data['title'],
                     description=form.cleaned_data['description'],
                     start_time=form.cleaned_data['start_time'],
@@ -91,10 +91,10 @@ def create_event(request):
                     lat=form.cleaned_data['latitude'],
                     long=form.cleaned_data['longitude'],
                 )
-                print(event)
             elif event_type == 'political':
                 event = factory.createPoliticalRally(
-                    organizer=str(request.user),
+                    organizer=request.user.username,
+                    email=request.user.email,
                     title=form.cleaned_data['title'],
                     description=form.cleaned_data['description'],
                     start_time=form.cleaned_data['start_time'],
@@ -105,7 +105,8 @@ def create_event(request):
                 )
             elif event_type == 'age_limit':
                 event = factory.createAgeLimitEvent(
-                    organizer=str(request.user),
+                    organizer=request.user.username,
+                    email=request.user.email,
                     title=form.cleaned_data['title'],
                     description=form.cleaned_data['description'],
                     start_time=form.cleaned_data['start_time'],
@@ -121,7 +122,7 @@ def create_event(request):
     else:
         form = EventForm()
 
-    user_events = Event.objects.filter(organizer=request.user).order_by('-start_time')
+    user_events = Event.objects.filter(organizer=request.user.username).order_by('-start_time')
 
     event_gender_data = {}
 
@@ -213,8 +214,6 @@ def delete_event(request, event_id):
 def event_list(request):
     events = Event.objects.all().order_by('-created_at')
     return render(request, 'createEvents/event_list.html', {'events': events})
-
-
 
 def event_detail(request, event_id):
     event = get_object_or_404(Event, pk=event_id)

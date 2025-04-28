@@ -77,6 +77,7 @@
                 <p class="mb-2"><strong>When:</strong> {{ event.start_time|date:"M d, Y" }} to {{ event.end_time|date:"M d, Y" }}</p>
                 <p class="mb-2"><strong>Where:</strong> {{ event.location }}</p>
                 <p class="mb-0"><strong>Organizer:</strong> {{ event.organizer }}</p>
+                <a href="mailto:{{ event.org_email}}"><button type="submit" class="mt-2 btn btn-primary">Contact Organizer</button></a>
             </div>
         </div>
 

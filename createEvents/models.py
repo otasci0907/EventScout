@@ -22,6 +22,7 @@ class Event(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     organizer = models.CharField(max_length=255)
+    org_email = models.EmailField(max_length=255, default="a@a.com")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

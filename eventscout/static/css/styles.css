@@ -19,5 +19,6 @@ header {
 }
 
 .pac-container {
-    z-index: 2000 !important;
-  }
+    z-index: 4000 !important;
+    position: absolute !important;
+}
