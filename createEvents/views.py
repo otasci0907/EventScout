@@ -315,8 +315,8 @@ def my_rsvps(request):
     if not request.user.is_authenticated:
         return redirect('/accounts/login/')
 
-    user_email = request.user.name
-    my_rsvps = RSVP.objects.filter(name=user_email)
+    user_email = request.user.email
+    my_rsvps = RSVP.objects.filter(email=user_email)
 
     rsvp_data = []
     for rsvp in my_rsvps:

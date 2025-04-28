@@ -65,3 +65,17 @@ class RSVPForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'placeholder': 'your@email.com', 'class': 'form-control'}),
             'phone': forms.TextInput(attrs={'placeholder': 'Phone Number', 'class': 'form-control'}),
         }
+    
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if RSVP.objects.filter(email=email).exists():
+            raise forms.ValidationError("This email address is already in use. Please use a different one.")
+        return email
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        email = self.cleaned_data['email']
+        user.email = email
+        if commit:
+            user.save()
+        return user
